@@ -5,8 +5,10 @@
 
 typedef struct Array {
   int *array;
-  size_t used;
-  size_t size;
+  int used;
+  int size;
+  /*size_t used;
+  size_t size;*/
 } Array;
 
 typedef struct Node {
@@ -32,8 +34,8 @@ void insertArray(Array *a, int element) {
     a->size++;
     a->array = realloc(a->array, a->size * sizeof(int));
   }
-  (a->used)++;
   a->array[a->used] = element;
+  (a->used)++;
 }
 
 void clearArray(Array *a) {
@@ -102,13 +104,14 @@ int pop_back(Array *a){
 int find(struct Node *pn,int index)
 {
 
-  //printf("Stack overflow %d");
 
 
 
   Array *pdump = &(pn -> dump);
 
 
+  //printf("pn->index: %d", pn->index); // 0
+  //printf("index: %d", index);
   if (pn->index == index)
   {  
     return(pn -> pivot);
@@ -138,30 +141,23 @@ int find(struct Node *pn,int index)
   Array *pright = &(pn -> right -> dump);
 
   int i;
+
+  //printf("pdump -> used: %d", pdump->used); //0
+  //use add instead of insertarray
   for(i = 0; i < (pdump -> used) ; i++ )
   {
+    
 
     if (pdump-> array[i] < pn->pivot)
     {
-      if (pn -> left -> pivot == -1)
-      {
-        pn -> left -> pivot = pdump -> array[i];
-      }
-      else{
-      insertArray(pleft,pdump -> array[i]);
-      }
-      printf("UP"); //no trigger
+
+      add(pn -> left,pdump->array[i]);
+      //printf("UP"); //no trigger
       (pn -> index)++;
     }
 
     else {
-          if (pn -> right -> pivot == -1)
-      {
-        pn -> right -> pivot = pdump -> array[i];
-      }
-      else{
-      insertArray(pright,pdump -> array[i]);
-      }
+      add(pn -> right,pdump->array[i]);
     }
   }
 
@@ -170,11 +166,17 @@ int find(struct Node *pn,int index)
   //int a = (pn->index);
   //printf("Index: %d", a); //index is empty or smth = 0
 
+
+  printf("index: %d", index);
+  printf("pn -> index: %d", pn -> index);
   if (pn->index > index)
   {
+    pn -> left -> index = pn -> index -1;
     return find(pn -> left,index);
+    
   }
 
+  pn -> right -> index = pn -> index + 1;
   return find(pn -> right,index);
 
   //need to initialise untill find
@@ -190,12 +192,12 @@ int find(struct Node *pn,int index)
 
 int main()
 {
-  printf("Found: %d", 1);
+  setbuf(stdout, NULL);
 
   struct Node* pn = initNode();
   
 
-  printf("Found: %d", 4);
+
 
   add(pn,3);
   add(pn,5);
@@ -206,10 +208,10 @@ int main()
 
   pn -> pivot = pop_back(&(pn -> dump));
   int a = pn -> pivot;
-  printf("Index: %d", a);
+
+  printf("Found: %d", find(pn,1));
   
 
-  printf("Found: %d", find(pn,3));
   //not found
 
 
