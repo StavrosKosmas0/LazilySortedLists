@@ -112,10 +112,6 @@ int find(struct Node *pn,int index)
 
   //printf("pn->index: %d", pn->index); // 0
   //printf("index: %d", index);
-  if (pn->index == index)
-  {  
-    return(pn -> pivot);
-  }
 
   if (!(pn->isReady))
   {
@@ -152,7 +148,7 @@ int find(struct Node *pn,int index)
     {
 
       add(pn -> left,pdump->array[i]);
-      //printf("UP"); //no trigger
+      printf ("%s \n", "A string");
       (pn -> index)++;
     }
 
@@ -162,21 +158,34 @@ int find(struct Node *pn,int index)
   }
 
   clearArray(pdump);
+  
+    if (pn->index == index)
+  {
+    return(pn -> pivot);
+  }
 
   //int a = (pn->index);
   //printf("Index: %d", a); //index is empty or smth = 0
 
 
-  printf("index: %d", index);
+  //printf("index: %d", index);
   printf("pn -> index: %d", pn -> index);
   if (pn->index > index)
   {
     pn -> left -> index = pn -> index -1;
+    //if (&(&(pn -> left) -> dump) -> used == 0)
+    //{
+        //return pn -> pivot;
+    //}
     return find(pn -> left,index);
     
   }
 
   pn -> right -> index = pn -> index + 1;
+    //if (&(&(pn -> right) -> dump) -> used == 0)
+    //{
+        //return pn -> pivot;
+    //}
   return find(pn -> right,index);
 
   //need to initialise untill find
@@ -209,7 +218,7 @@ int main()
   pn -> pivot = pop_back(&(pn -> dump));
   int a = pn -> pivot;
 
-  printf("Found: %d", find(pn,1));
+  printf("Found: %d", find(pn,4));
   
 
   //not found
