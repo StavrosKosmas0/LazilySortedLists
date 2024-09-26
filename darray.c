@@ -17,6 +17,7 @@ typedef struct Node {
   int index;
   struct Node *left;
   struct Node *right;
+  struct Node *parent;
   Array dump;
 } Node;
 
@@ -61,6 +62,7 @@ struct Node* initNode() {
   n -> index = 0;
   n -> left = NULL;
   n -> right = NULL;
+  n -> parent = NULL;
   initArray(&(n -> dump),0);
   return n;
 }
@@ -101,8 +103,54 @@ int pop_back(Array *a){
   return element;
 }
 
+
+bool Real(struct Node *pn)
+{
+  //printf("index: %d", pn -> index); //here
+  if (pn == NULL){
+    return false;
+  }
+  return true;
+}
+void IncrementAllChildrenOf(struct Node *pn)
+{
+
+  //printf("index: %d", pn -> index);
+  
+  (pn -> index)++; //taking in empty nodes is problem
+  if (Real(pn->left))
+  {
+    IncrementAllChildrenOf(pn ->left);
+
+  }
+  if (Real(pn->right))
+  {
+    IncrementAllChildrenOf(pn->right);
+  }
+}
+
+void IncrementAllIndexesLeftOf(struct Node *pn)
+{
+  //printf("index: %d", pn -> index);
+  
+  if (pn->parent != NULL)
+    {
+      (pn->parent->index)++;
+      if (Real(pn->parent->left))
+      {
+      IncrementAllChildrenOf(pn->parent->left);
+      }
+      IncrementAllIndexesLeftOf(pn->parent);
+      
+    }
+}
+
 int find(struct Node *pn,int index)
 {
+
+
+  //printf("index: %d", pn->index);
+
 
 
 
@@ -113,12 +161,14 @@ int find(struct Node *pn,int index)
   //printf("pn->index: %d", pn->index); // 0
   //printf("index: %d", index);
 
-  if (!(pn->isReady))
-  {
+  //if (!(pn->isReady))
+ // {
     pn -> left = initNode();
+    pn -> left -> parent = pn;
     pn -> right = initNode();
+    pn -> right -> parent = pn;
     pn-> isReady = true;
-  }
+  //}
 
   //wrong pivoting
   /*
@@ -140,16 +190,19 @@ int find(struct Node *pn,int index)
 
   //printf("pdump -> used: %d", pdump->used); //0
   //use add instead of insertarray
+
   for(i = 0; i < (pdump -> used) ; i++ )
   {
-    
+
 
     if (pdump-> array[i] < pn->pivot)
     {
 
       add(pn -> left,pdump->array[i]);
-      printf ("%s \n", "A string");
+    
+      //printf ("%s \n", "A string");
       (pn -> index)++;
+      IncrementAllIndexesLeftOf(pn);
     }
 
     else {
@@ -157,9 +210,12 @@ int find(struct Node *pn,int index)
     }
   }
 
+  pn -> left -> index = pn -> index -1;
+  pn -> right -> index = pn -> index + 1;
+
   clearArray(pdump);
-  
-    if (pn->index == index)
+
+    if (pn->index == index) //&& pn->pivot != -1)
   {
     return(pn -> pivot);
   }
@@ -169,24 +225,32 @@ int find(struct Node *pn,int index)
 
 
   //printf("index: %d", index);
-  printf("pn -> index: %d", pn -> index);
+  //printf("pn -> index: %d", pn -> index);
   if (pn->index > index)
   {
-    pn -> left -> index = pn -> index -1;
-    //if (&(&(pn -> left) -> dump) -> used == 0)
-    //{
-        //return pn -> pivot;
-    //}
+    if ((pn -> left) -> pivot == -1)
+    {
+        printf("index: %d", pn -> pivot);
+        return pn -> pivot;
+    }
+    else{
     return find(pn -> left,index);
-    
+    }
+
   }
 
-  pn -> right -> index = pn -> index + 1;
-    //if (&(&(pn -> right) -> dump) -> used == 0)
-    //{
-        //return pn -> pivot;
-    //}
+  if (pn ->index == index){
+    return pn -> pivot;
+  }
+
+    if ((pn -> right) -> pivot == -1)
+    {
+        printf("index: %d", pn -> pivot);
+        return pn -> pivot;
+    }
+  else{
   return find(pn -> right,index);
+  }
 
   //need to initialise untill find
 
@@ -204,22 +268,33 @@ int main()
   setbuf(stdout, NULL);
 
   struct Node* pn = initNode();
-  
 
 
 
-  add(pn,3);
-  add(pn,5);
-  add(pn,7);
-  add(pn,2);
-  add(pn,19);
-  add(pn,15);
 
-  pn -> pivot = pop_back(&(pn -> dump));
-  int a = pn -> pivot;
+  add(pn,7); //6
+  add(pn,1); //0
+  add(pn,3); //3
+  add(pn,11); //9
+  add(pn,13); //11
+  add(pn,5); //4
+  add(pn,6); //5
+  add(pn,8); //7
+  add(pn,4); //3
+  add(pn,10); //8
+  add(pn,2); //1
+  add(pn,12); //10
 
-  printf("Found: %d", find(pn,4));
-  
+
+  //pn -> pivot = pop_back(&(pn -> dump));
+  //int a = pn -> pivot
+
+  pn -> index = 0;
+  pn -> parent = NULL;
+  int i;
+      printf("Found: %d", find(pn,7));
+
+
 
   //not found
 
