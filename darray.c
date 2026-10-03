@@ -162,6 +162,7 @@ void SplitDumpArrayToLeftAndRight(struct Node *pn, Array *pdump)
 {
 
   int i =0;
+  int start = pn -> index;
   for(i = 0; i < (pdump -> used) ; i++ )
   {
 
@@ -172,7 +173,6 @@ void SplitDumpArrayToLeftAndRight(struct Node *pn, Array *pdump)
       add(pn -> left,pdump->array[i]);
 
       (pn -> index)++;
-      IncrementAllIndexesRightOf(pn);
     }
 
     else {
@@ -180,7 +180,7 @@ void SplitDumpArrayToLeftAndRight(struct Node *pn, Array *pdump)
     }
   }
 
-  pn -> left -> index = pn -> index -1;
+  pn -> left -> index = start;
   pn -> right -> index = pn -> index + 1;
 
   clearArray(pdump);
@@ -226,12 +226,15 @@ int find(struct Node *pn,int index)
   
   Array *pdump = &(pn -> dump);
 
-
+  if (!pn -> isReady)
+  {
     pn -> left = initNode();
     pn -> left -> parent = pn;
     pn -> right = initNode();
     pn -> right -> parent = pn;
     pn-> isReady = true;
+    SplitDumpArrayToLeftAndRight(pn,pdump);
+  }
 
 
   Array *pleft = &(pn -> left -> dump);
@@ -241,9 +244,6 @@ int find(struct Node *pn,int index)
 
 
   //Logic
-
-
-  SplitDumpArrayToLeftAndRight(pn,pdump);
 
 
 
